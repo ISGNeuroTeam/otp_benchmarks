@@ -4,6 +4,7 @@
 # search indexes dir
 # search flow dir
 # unpack buckets
+# add new indexes to allow index in rest
 # testing
 # clean
 # show result
