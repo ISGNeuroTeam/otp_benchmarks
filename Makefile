@@ -31,7 +31,7 @@ pack: create_sfx
 
 build: $(COMPONENTS)
 	# required section
-	echo Build!
+	@echo Build!
 	mkdir build
 	mkdir build/$(PROJECT_NAME)
 	cp -r ./$(PROJECT_NAME)/* ./build/$(PROJECT_NAME)
@@ -43,10 +43,10 @@ clean:
 	# required section"
 	rm -rf build $(PROJECT_NAME)-*.tar.gz
 
-test: $(PROJECT_NAME)/node_modules
+test:
 	# required section
-	echo "Testing..."
-	echo $(PROJECT_NAME)
+	@echo "Testing..."
+	@#echo $(PROJECT_NAME)
 
 create_sfx: build
 	@echo $@
