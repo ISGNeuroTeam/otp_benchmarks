@@ -30,7 +30,7 @@ pack: create_sfx
 	echo Create archive \"$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz\"
 	cd build; tar czf ../$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz $(PROJECT_NAME)*.run
 
-build: $(COMPONENTS)
+build: $(COMPONENTS) venv
 	# required section
 	@echo Build!
 	mkdir build
@@ -39,6 +39,11 @@ build: $(COMPONENTS)
 	cp README.md build/$(PROJECT_NAME)/
 	cp CHANGELOG.md build/$(PROJECT_NAME)/
 	cp LICENSE.md build/$(PROJECT_NAME)/
+
+venv:
+        echo Create venv
+        python3 -m venv --copies venv
+        venv/bin/pip3 install -r requirements.txt
 
 clean:
 	# required section"
