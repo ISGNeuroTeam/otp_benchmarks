@@ -28,26 +28,32 @@ pack: create_sfx
 	$(SET_BRANCH)
 	#$(SET_VERSION)
 	echo Create archive \"$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz\"
-	cd build; tar czf ../$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz $(PROJECT_NAME)*.run
+	@#cd build; tar czf ../$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz $(PROJECT_NAME)*.run
+	tar czf $(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz $(PROJECT_NAME)*.run
 
 build: $(COMPONENTS) venv
 	# required section
 	@echo Build!
 	mkdir build
 	mkdir build/$(PROJECT_NAME)
+	cp -r ./venv ./build/$(PROJECT_NAME)
 	cp -r ./$(PROJECT_NAME)/* ./build/$(PROJECT_NAME)
+	mv ./build/$(PROJECT_NAME)/benchmark.cfg ./build/$(PROJECT_NAME)/benchmark.cfg.example
+	cp dataset/benchmark_index_many_bucket_many_parquet_file.tar.gz dataset/benchmark_index_single_bucket_single_parquet_file.tar.gz ./build
 	cp README.md build/$(PROJECT_NAME)/
 	cp CHANGELOG.md build/$(PROJECT_NAME)/
 	cp LICENSE.md build/$(PROJECT_NAME)/
 
 venv:
-        echo Create venv
-        python3 -m venv --copies venv
-        venv/bin/pip3 install -r requirements.txt
+	echo Create venv
+	mkdir -p /opt/otp/otp_benchmarks
+	python3 -m venv --copies /opt/otp/otp_benchmarks/venv
+	/opt/otp/otp_benchmarks/venv/bin/pip3 install -r requirements.txt
+	cp -r /opt/otp/otp_benchmarks/venv venv
 
 clean:
 	# required section"
-	rm -rf build $(PROJECT_NAME)-*.tar.gz
+	rm -rf build $(PROJECT_NAME)-*.tar.gz $(PROJECT_NAME)-*.run venv /opt/otp/otp_benchmarks/venv
 
 test:
 	# required section
@@ -58,4 +64,7 @@ create_sfx: build
 	@echo $@
 	$(SET_BRANCH)
 	#$(SET_VERSION)
-	cd build; makeself --notemp $(PROJECT_NAME) $(PROJECT_NAME)-$(VERSION)-$(BRANCH).run "OTP Benchmark" ./install.sh
+	cp sfx_scripts/install.sh ./build
+	chmod +x ./build/install.sh
+	@#cd build; makeself ./$(PROJECT_NAME) $(PROJECT_NAME)-$(VERSION)-$(BRANCH).run "OTP Benchmark" ./install.sh
+	makeself build $(PROJECT_NAME)-$(VERSION)-$(BRANCH).run "OTP Benchmark" ./install.sh
