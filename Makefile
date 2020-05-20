@@ -10,10 +10,10 @@ endef
 PROJECT_NAME=otp_benchmarks
 VERSION=0.0.1
 
-GENERATE_VERSION = $(shell jq .version ./${PROJECT_NAME}/package.json )
+#GENERATE_VERSION = $(shell jq .version ./${PROJECT_NAME}/package.json )
 GENERATE_BRANCH = $(shell git name-rev $$(git rev-parse HEAD) | cut -d\  -f2 | sed -re 's/^(remotes\/)?origin\///' | tr '/' '_')
 
-SET_VERSION = $(eval VERSION=$(GENERATE_VERSION))
+#SET_VERSION = $(eval VERSION=$(GENERATE_VERSION))
 SET_BRANCH = $(eval BRANCH=$(GENERATE_BRANCH))
 
 #.SILENT:
