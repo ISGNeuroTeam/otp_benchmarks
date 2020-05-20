@@ -8,5 +8,5 @@
 # testing
 # clean
 # show result
-   
+
 echo "Install script"

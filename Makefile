@@ -8,11 +8,12 @@ Addition section:
 endef
 
 PROJECT_NAME=otp_benchmarks
+VERSION=0.0.1
 
-GENERATE_VERSION = $(shell jq .version ./${PROJECT_NAME}/package.json )
+#GENERATE_VERSION = $(shell jq .version ./${PROJECT_NAME}/package.json )
 GENERATE_BRANCH = $(shell git name-rev $$(git rev-parse HEAD) | cut -d\  -f2 | sed -re 's/^(remotes\/)?origin\///' | tr '/' '_')
 
-SET_VERSION = $(eval VERSION=$(GENERATE_VERSION))
+#SET_VERSION = $(eval VERSION=$(GENERATE_VERSION))
 SET_BRANCH = $(eval BRANCH=$(GENERATE_BRANCH))
 
 #.SILENT:
@@ -25,7 +26,7 @@ all:
 
 pack: create_sfx
 	$(SET_BRANCH)
-	$(SET_VERSION)
+	#$(SET_VERSION)
 	echo Create archive \"$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz\"
 	cd build; tar czf ../$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz $(PROJECT_NAME)*.run
 
@@ -51,5 +52,5 @@ test:
 create_sfx: build
 	@echo $@
 	$(SET_BRANCH)
-	$(SET_VERSION)
+	#$(SET_VERSION)
 	cd build; makeself --notemp $(PROJECT_NAME) $(PROJECT_NAME)-$(VERSION)-$(BRANCH).run "OTP Benchmark" ./install.sh
