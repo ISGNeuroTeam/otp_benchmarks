@@ -29,7 +29,7 @@ pack: create_sfx
 	#$(SET_VERSION)
 	echo Create archive \"$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz\"
 	@#cd build; tar czf ../$(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz $(PROJECT_NAME)*.run
-	tar czf $(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz $(PROJECT_NAME)*.run
+	tar czf $(PROJECT_NAME)-$(VERSION)-$(BRANCH).tar.gz $(PROJECT_NAME)*.run ReadMe.txt
 
 build: $(COMPONENTS) venv
 	# required section
@@ -53,6 +53,7 @@ venv:
 
 clean:
 	# required section"
+	find . -type d -name '*pycache*' -not -path '*venv*' | xargs rm -rf
 	rm -rf build $(PROJECT_NAME)-*.tar.gz $(PROJECT_NAME)-*.run venv /opt/otp/otp_benchmarks/venv
 
 test:
