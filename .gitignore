@@ -1,0 +1,5 @@
+build/
+.idea
+venv
+otp_benchmarks-*.run
+otp_benchmarks-*.tar.gz
