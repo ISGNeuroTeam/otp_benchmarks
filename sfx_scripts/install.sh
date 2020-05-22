@@ -121,8 +121,9 @@ case "$item" in
     6 = sec
     7 = sec
     8 = sec"
-        exit 0
         ;;
 #    *) echo "Ничего не ввели. Выполняем действие по умолчанию..."
 #        ;;
 esac
+
+echo "Repeat execute:\ncd $BASEDIR/$BENCHDIR; venv/bin/python3 benchmark.py"
