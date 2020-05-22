@@ -67,6 +67,7 @@ def main():
                           filter(lambda x: re.match("^query_\d$", x), dict(cfg._sections).keys())))
     conn.connect()
 
+    query_counter=1
     for query in query_list:
         if "query" not in query:
             continue
@@ -75,7 +76,10 @@ def main():
         if "timeout" not in query:
             query["timeout"] = 300
 
-        # print(query)
+        print("Run query {}".format(query_counter))
+        query['query_counter'] = query_counter
+        query_counter += 1
+
         conn.request(query['query'])
         while True:
             status = conn.get_status()
@@ -92,7 +96,7 @@ def main():
                 break
 
     for query in query_list:
-        print("\nStatus={status}, Time execution {time}, estimated time {estimated_time}, query = {query}".format(**query))
+        print("\n{query_counter} Status={status}, Time execution {time}, estimated time {estimated_time}, query = {query}".format(**query))
 
 
 if __name__ == '__main__':
