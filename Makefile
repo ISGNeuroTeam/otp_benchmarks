@@ -39,6 +39,7 @@ build: $(COMPONENTS) venv
 	cp -r ./venv ./build/$(PROJECT_NAME)
 	cp -r ./$(PROJECT_NAME)/* ./build/$(PROJECT_NAME)
 	mv ./build/$(PROJECT_NAME)/benchmark.cfg ./build/$(PROJECT_NAME)/benchmark.cfg.example
+	git lfs fetch
 	cp dataset/benchmark_index_single_bucket_single_parquet_file.tar.gz dataset/benchmark_index_many_bucket_many_parquet_file_small.tar.gz dataset/benchmark_index_many_bucket_many_parquet_file_normal.tar.gz ./build
 	cp README.md build/$(PROJECT_NAME)/
 	cp CHANGELOG.md build/$(PROJECT_NAME)/
