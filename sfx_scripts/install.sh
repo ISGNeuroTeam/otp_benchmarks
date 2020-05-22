@@ -17,7 +17,7 @@ BENCHCFG=benchmark.cfg
 
 INDEXDIR=/opt/otp/indexes
 IDX1=benchmark_index_single_bucket_single_parquet_file
-SIZE_benchmark_index_single_bucket_single_parquet_file=220
+SIZE_benchmark_index_single_bucket_single_parquet_file.tar.gz=220
 IDX2=benchmark_index_many_bucket_many_parquet_file
 SIZE_benchmark_index_many_bucket_many_parquet_file=2300
 
@@ -26,21 +26,23 @@ CONFIG_FILE=$BASEDIR/$BENCHDIR/$BENCHCFG
 function TestAndUnpackIndex {
   # $1 index name
   # $2 destination path
+#          TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file.tar.gz benchmark_index_single_bucket_single_parquet_file $INDEXDIR
+
   echo "Check index"
-  if [ -e $2/$1 ]; then
-  echo " Index $1 exist"
+  if [ -e $3/$2 ]; then
+  echo " Index $2 exist"
   echo " Calculating index size..."
-  IDX_SIZE=`du -ms $2/$1 | awk '{print $1}'`
+  IDX_SIZE=`du -ms $3/$2 | awk '{print $1}'`
   IDX_COMPARE_SIZE=SIZE_$1
   if [ "$IDX_SIZE" -le ${!IDX_COMPARE_SIZE} ]; then
-   echo " Index '$1' to small, need ${!IDX_COMPARE_SIZE} MB but exist $IDX_SIZE MB"
-   NEW_RENAMED_NAME=${IDX}_bad_$((RANDOM%1000000))
+   echo " Index '$2' to small, need ${!IDX_COMPARE_SIZE} MB but exist $IDX_SIZE MB"
+   NEW_RENAMED_NAME=${2}_bad_$((RANDOM%1000000))
    echo " Rename bad index to $NEW_RENAMED_NAME"
-   mv $2/$1 2/$NEW_RENAMED_NAME || exit
+   mv $3/$2 $3/$NEW_RENAMED_NAME || exit
   fi
  fi
- echo " Unpack index '$1' to '$2'"
- tar xf $1.tar.gz -C $2
+ echo " Unpack index '$2' to '$3'"
+ tar xf $2.tar.gz -C $3
 }
 
 function InstallBenchmark {
@@ -85,13 +87,15 @@ echo -ne "Select type:\n 1 - Normal pack\n 2 - Small pack (default)\n> "
 read item
 case "$item" in
     1) echo "Running normal tests..."
-        TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file $INDEXDIR
+        TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file.tar.gz benchmark_index_single_bucket_single_parquet_file $INDEXDIR
+        TestAndUnpackIndex benchmark_index_many_bucket_many_parquet_file_normal.tar.gz benchmark_index_many_bucket_many_parquet_file $INDEXDIR
         InstallBenchmark $BASEDIR
         ConfigureNormalBenchmark
         ExecuteBenchmark $BASEDIR/$BENCHDIR
         ;;
     *) echo "Running small tests..."
-        TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file $INDEXDIR
+        TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file.tar.gz benchmark_index_single_bucket_single_parquet_file $INDEXDIR
+        TestAndUnpackIndex benchmark_index_many_bucket_many_parquet_file_small.tar.gz benchmark_index_many_bucket_many_parquet_file $INDEXDIR
         InstallBenchmark $BASEDIR
         ConfigureSmallBenchmark
         ExecuteBenchmark $BASEDIR/$BENCHDIR
