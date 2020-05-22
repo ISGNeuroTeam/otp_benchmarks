@@ -16,19 +16,26 @@ BENCHDIR=otp_benchmarks
 BENCHCFG=benchmark.cfg
 
 INDEXDIR=/opt/otp/indexes
+
 IDX1=benchmark_index_single_bucket_single_parquet_file
-SIZE_benchmark_index_single_bucket_single_parquet_file.tar.gz=220
+SIZE_benchmark_index_single_bucket_single_parquet_file=220
+
 IDX2=benchmark_index_many_bucket_many_parquet_file
-SIZE_benchmark_index_many_bucket_many_parquet_file=2300
+SIZE_benchmark_index_many_bucket_many_parquet_file_normal=2000
+SIZE_benchmark_index_many_bucket_many_parquet_file_small=80
 
 CONFIG_FILE=$BASEDIR/$BENCHDIR/$BENCHCFG
 
 function TestAndUnpackIndex {
-  # $1 index name
-  # $2 destination path
-#          TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file.tar.gz benchmark_index_single_bucket_single_parquet_file $INDEXDIR
-
+  # $1 archive name
+  # $2 index name
+  # $3 destination path
+  # $4 rewrite index
   echo "Check index"
+  if [ $4 ]; then
+    echo " Erasing old index '$3/$2'"
+    rm -rf $3/$2
+  fi
   if [ -e $3/$2 ]; then
   echo " Index $2 exist"
   echo " Calculating index size..."
@@ -41,8 +48,10 @@ function TestAndUnpackIndex {
    mv $3/$2 $3/$NEW_RENAMED_NAME || exit
   fi
  fi
- echo " Unpack index '$2' to '$3'"
- tar xf $2.tar.gz -C $3
+ if [ ! -e $3/$2 ]; then
+  echo " Unpack index '$2' to '$3'"
+  tar xf $1.tar.gz -C $3
+ fi
 }
 
 function InstallBenchmark {
@@ -53,18 +62,12 @@ function InstallBenchmark {
   rm -rf otp_benchmarks
 }
 
-function ConfigureSmallBenchmark {
+function ConfigureBenchmark {
   # $1 installation path
-  echo "Configure benchmark to small mode"
-  echo "cfg small $1 $2 $3"
-  #!!!!!!!!!!!!!!!!!
-}
-
-function ConfigureNormalBenchmark {
-  # $1 installation path
-  echo "Configure benchmark to normal mode"
-  #!!!!!!!!!!!!!!!!!!!!!!!
-  cp -f $CONFIG_FILE.example $CONFIG_FILE
+  echo "Configure benchmark"
+  if [ ! -f $1 ]; then
+   cp -f $1.example $1
+  fi
 }
 
 function ExecuteBenchmark {
@@ -73,70 +76,53 @@ function ExecuteBenchmark {
   cd $1; venv/bin/python3 benchmark.py
 }
 
-#Спросить тип установки
-#проверить индексы, если плохо то удалить
-#распаковать индексы
-#Согласно типу установки сконфигурить бенчмарк
-#запустить бенчмарк
-
-
 echo "Install script"
-
 echo -ne "Select type:\n 1 - Normal pack\n 2 - Small pack (default)\n> "
 
 read item
 case "$item" in
     1) echo "Running normal tests..."
-        TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file.tar.gz benchmark_index_single_bucket_single_parquet_file $INDEXDIR
-        TestAndUnpackIndex benchmark_index_many_bucket_many_parquet_file_normal.tar.gz benchmark_index_many_bucket_many_parquet_file $INDEXDIR
+        TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file benchmark_index_single_bucket_single_parquet_file $INDEXDIR
+        TestAndUnpackIndex benchmark_index_many_bucket_many_parquet_file_normal benchmark_index_many_bucket_many_parquet_file $INDEXDIR
         InstallBenchmark $BASEDIR
-        ConfigureNormalBenchmark
+        ConfigureBenchmark $CONFIG_FILE
         ExecuteBenchmark $BASEDIR/$BENCHDIR
+        echo "Estimated_time for query:
+    1 = 1sec
+
+  single
+    2 = 1sec
+    3 = 3sec
+    4 = 140sec
+
+  many
+    5 = 103sec
+    6 = 182sec
+    7 = 157sec
+    8 = 210sec"
+
         ;;
     *) echo "Running small tests..."
-        TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file.tar.gz benchmark_index_single_bucket_single_parquet_file $INDEXDIR
-        TestAndUnpackIndex benchmark_index_many_bucket_many_parquet_file_small.tar.gz benchmark_index_many_bucket_many_parquet_file $INDEXDIR
+        TestAndUnpackIndex benchmark_index_single_bucket_single_parquet_file benchmark_index_single_bucket_single_parquet_file $INDEXDIR
+        TestAndUnpackIndex benchmark_index_many_bucket_many_parquet_file_small benchmark_index_many_bucket_many_parquet_file $INDEXDIR true
         InstallBenchmark $BASEDIR
-        ConfigureSmallBenchmark
+        ConfigureBenchmark $CONFIG_FILE
         ExecuteBenchmark $BASEDIR/$BENCHDIR
+        echo "Estimated_time for query:
+    1 = 1sec
+
+  single
+    2 = 1sec
+    3 = 3sec
+    4 = 140sec
+
+  many
+    5 = sec
+    6 = sec
+    7 = sec
+    8 = sec"
         exit 0
         ;;
 #    *) echo "Ничего не ввели. Выполняем действие по умолчанию..."
 #        ;;
 esac
-
-exit
-
-mkdir -p $BASEDIR/$BENCHDIR
-cp -r otp_benchmarks $BASEDIR
-rm -rf otp_benchmarks
-
-if [ ! -f $CONFIG_FILE ]; then
- cp $CONFIG_FILE.example $CONFIG_FILE
-fi
-
-for IDX in $IDX1 $IDX2; do
- echo "Test index '$IDX'"
-
- if [ -e $INDEXDIR/$IDX ]; then
-  IDX_SIZE=`du -ms $INDEXDIR/$IDX | awk '{print $1}'`
-  IDX_COMPARE_SIZE=SIZE_$IDX
-  if [ "$IDX_SIZE" -le ${!IDX_COMPARE_SIZE} ]; then
-   echo "Index '$IDX' to small, need ${!IDX_COMPARE_SIZE} MB but exist $IDX_SIZE MB"
-   echo "Recovery index"
-   mv $INDEXDIR/$IDX $INDEXDIR/${IDX}_bad || exit
-  fi
- fi
-
- if [ ! -e $INDEXDIR/$IDX ]; then
-  echo "Unpack index '$IDX'"
-  tar xf $IDX.tar.gz -C $INDEXDIR
- fi
-done
-
-
-
-    
-echo "Start testing... Please wait..."
-cd $BASEDIR/$BENCHDIR; venv/bin/python3 benchmark.py
-

@@ -92,7 +92,7 @@ def main():
                 break
 
     for query in query_list:
-        print("\nTime execution {time}, estimated time {estimated_time}\n{status} for query = {query}".format(**query))
+        print("\nStatus={status}, Time execution {time}, estimated time {estimated_time}, query = {query}".format(**query))
 
 
 if __name__ == '__main__':
