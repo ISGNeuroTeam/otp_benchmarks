@@ -7,7 +7,7 @@ Contain the packed index _**benchmark_index_single_bucket_single_parquet_file**_
 ###### dataset/benchmark_index_many_bucket_many_parquet_file.tar.gz
 Contain the packed index _**benchmark_index_many_bucket_many_parquet_file**_ for platform, containing 150k buckets with one parquet file.
 
-### SPL Query
+### OTL Query
 ```text
 Time for configuration
     2cpu driver (4GB)
