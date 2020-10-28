@@ -55,7 +55,7 @@ class ConnectorRest:
         self.requests.post(self.baseurl + "/api/makejob",
                            data={
                                "sid": self.sid,
-                               "original_spl": str(self.query),
+                               "original_otl": str(self.query),
                                "tws": self.tws,
                                "twf": self.twf,
                                "username": self.login,
@@ -93,7 +93,7 @@ class ConnectorRest:
         response = self.requests.get(
             self.baseurl + "/api/checkjob",
             params={
-                "original_spl": str(self.query),
+                "original_otl": str(self.query),
                 "tws": self.tws,
                 "twf": self.twf,
                 "cache_ttl": self.cache_ttl
@@ -190,7 +190,7 @@ def get_data(
         base_url + "api/makejob",
         data={
             "sid": str(random.randint(0, 10000)),
-            "original_spl": str(search),
+            "original_otl": str(search),
             "tws": tws,
             "twf": twf,
             "username": username,
@@ -205,7 +205,7 @@ def get_data(
         response = requests.get(
             base_url + "api/checkjob",
             params={
-                "original_spl": str(search),
+                "original_otl": str(search),
                 "tws": "0",
                 "twf": "0",
                 "cache_ttl": "300",

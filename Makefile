@@ -8,7 +8,7 @@ Addition section:
 endef
 
 PROJECT_NAME=otp_benchmarks
-VERSION=0.0.1
+VERSION=0.0.2
 
 #GENERATE_VERSION = $(shell jq .version ./${PROJECT_NAME}/package.json )
 GENERATE_BRANCH = $(shell git name-rev $$(git rev-parse HEAD) | cut -d\  -f2 | sed -re 's/^(remotes\/)?origin\///' | tr '/' '_')
