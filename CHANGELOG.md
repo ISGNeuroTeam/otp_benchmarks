@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] 2023-01-26
+### Fixed
+- no time to explain
+
 ## [0.0.2] - 2020-10-28
 ### Hotfix
 - SPL to OTL fix
